@@ -3,8 +3,6 @@
 //pos 0 in bottom left
 //x-> y ^
 
-use std::time::Duration;
-
 use inputbot::KeybdKey::{self, *};
 
 fn get_pos(x: u8, y: u8) -> u16 {
@@ -37,11 +35,32 @@ fn print_state(apple : u16, snake : Vec<u16>) {
         println!("{}",  current_str);
     }
 }
+//return true if snake is still alive
+//return false if snake is dead
+fn move_snake(snake : &mut Vec<u16>, head_dir: u8, apple : &mut u16) -> bool {
+    let headpos: u16 = *snake.last().unwrap();
+    let newheadpos: u16 = (get_pos(get_x(headpos), get_y(headpos)) as i16 + match head_dir{
+        0 => 0x100,
+        1 => 1,
+        2 => -0x100,
+        3 => -1,
+        4.. =>0,
+    }).try_into().unwrap();
+    if snake.contains(&newheadpos) {
+        return false;
+    }
+    snake.push(newheadpos);
+    if newheadpos != *apple {
+        snake.remove(0);
+    }
+    return true;
+}
 
 fn main() {
     let mut apple: u16 = get_pos(10, 10);
     let mut snake: Vec<u16> = Vec::new();
     let mut running: bool = true;
+    let tick = 50;
     // 0 -> up
     // 1 -> right
     // 2 -> down
@@ -61,7 +80,8 @@ fn main() {
                 head_dir = key as u8;
             }
         }
+        move_snake(&mut snake, head_dir, &mut apple);
         print_state(apple, snake.clone());
-        std::thread::sleep(Duration::from_millis(16));
+        std::thread::sleep(std::time::Duration::from_millis(tick));
     }
 }
