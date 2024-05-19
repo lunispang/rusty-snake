@@ -42,18 +42,22 @@ fn print_state(apple : u16, snake : Vec<u16>) {
     
 }*/
 
+fn add_dir(pos: u16, dir: u8) -> u16 {
+    match dir{
+        0 => pos-0x100,
+        1 => pos+1,
+        2 => pos+0x100,
+        3 => pos-1,
+        4.. =>pos,
+    }
+}
+
 //return true if snake is still alive
 //return false if snake is dead
 fn move_snake(snake : &mut Vec<u16>, head_dir: u8, apple : &mut u16) -> bool {
     let headpos: u16 = *snake.last().unwrap();
-    let newheadpos: u16 = match head_dir{
-        0 => headpos-0x100,
-        1 => headpos+1,
-        2 => headpos+0x100,
-        3 => headpos-1,
-        4.. =>headpos,
-    };
-    if snake.contains(&newheadpos){
+    let newheadpos: u16 = add_dir(headpos, head_dir);
+    if snake.contains(&newheadpos) || get_x(newheadpos) >= 40 || get_y(newheadpos) >= 20{
         return false;
     }
     snake.push(newheadpos);
@@ -83,8 +87,9 @@ fn main() {
         if exit_key.is_pressed(){ 
             running = false;
         }
+        let head_pos: u16 = *snake.last().unwrap();
         for key in 0..4 {
-            if movement_keys[key].is_pressed() {
+            if movement_keys[key].is_pressed() &! snake.contains(&add_dir(head_pos, head_dir)){
                 head_dir = key as u8;
             }
         }
