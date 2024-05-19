@@ -3,6 +3,8 @@
 //pos 0 in bottom left
 //x-> y ^
 
+use std::time::Duration;
+
 use inputbot::KeybdKey::{self, *};
 
 fn get_pos(x: u8, y: u8) -> u16 {
@@ -51,11 +53,15 @@ fn main() {
         snake.push(get_pos(x, 10));
     }
     while running {
+        if exit_key.is_pressed(){ 
+            running = false;
+        }
         for key in 0..4 {
             if movement_keys[key].is_pressed() {
                 head_dir = key as u8;
             }
         }
+        print_state(apple, snake.clone());
+        std::thread::sleep(Duration::from_millis(16));
     }
-    print_state(apple, snake)
 }
