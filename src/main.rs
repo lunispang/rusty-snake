@@ -37,10 +37,20 @@ fn print_state(apple : u16, snake : Vec<u16>) {
     }
 }
 
-/*fn move_apple(snake : &Vec<u16>, apple : &mut u16){
-    let rng: rand::prelude::ThreadRng = rand::thread_rng();
-    
-}*/
+fn move_apple(snake : &Vec<u16>, apple : &mut u16){
+    let mut rng: rand::prelude::ThreadRng = rand::thread_rng();
+    let mut n: usize = rng.gen_range(0..(800-snake.len()));
+    for x in 0..40 {
+        for y in 0..20 {
+            if n == 0 {
+                *apple = get_pos(x, y).clone();
+            }
+            if !snake.contains(&get_pos(x, y)) {
+                n-=1;
+            }
+        }
+    }
+}
 
 fn add_dir(pos: u16, dir: u8) -> u16 {
     match dir{
@@ -62,7 +72,7 @@ fn move_snake(snake : &mut Vec<u16>, head_dir: u8, apple : &mut u16) -> bool {
     }
     snake.push(newheadpos);
     if newheadpos != *apple {
-        //move_apple(snake, apple);
+        move_apple(snake, apple);
         snake.remove(0);
     }
     return true;
