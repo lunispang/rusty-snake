@@ -23,11 +23,11 @@ fn get_y(pos: u16) -> u8 {
 
 fn print_state(apple : u16, snake : Vec<u16>) {
     print!("\x1B[2J");
-    let mut current_line : [char; 40];
-    let mut current_str : String;
+    let mut current_line : [char; XSIZE as usize];
     let apple_y: u8 = get_y(apple);
+    println!("{}", &['-'; (XSIZE+2) as usize].iter().cloned().collect::<String>());
     for y in 0..YSIZE {
-        current_line = [' '; 40];
+        current_line = [' '; XSIZE as usize];
         if apple_y == y {
             current_line[get_x(apple) as usize] = 'O';
         }
@@ -36,9 +36,9 @@ fn print_state(apple : u16, snake : Vec<u16>) {
                 current_line[x as usize] = '#';
             }
         }
-        current_str = current_line.iter().cloned().collect();
-        println!("{}",  current_str);
+        println!("|{}|",  current_line.iter().cloned().collect::<String>());
     }
+    println!("{}", ['-'; (XSIZE+2) as usize].iter().cloned().collect::<String>());
 }
 
 fn move_apple(snake : Vec<u16>, apple : &mut u16){
@@ -52,10 +52,10 @@ fn move_apple(snake : Vec<u16>, apple : &mut u16){
 
 fn add_dir(pos: u16, dir: u8) -> u16 {
     match dir {
-        0 => pos-0x100,
+        0 => pos.wrapping_sub(0x100),
         1 => pos+1,
         2 => pos+0x100,
-        3 => pos-1,
+        3 => pos.wrapping_sub(1),
         4.. =>pos,
     }
 }
