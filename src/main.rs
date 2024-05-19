@@ -5,6 +5,7 @@
 
 use inputbot::KeybdKey::{self, *};
 use rand::prelude::*;
+use std::io::*;
 
 const YSIZE: u8 = 10;
 const XSIZE: u8 = 20;
@@ -22,10 +23,14 @@ fn get_y(pos: u16) -> u8 {
 }
 
 fn print_state(apple : u16, snake : Vec<u16>) {
-    print!("\x1B[2J");
+    let mut out: Stdout = stdout();
+    out.flush().unwrap();
+    out.write(b"\x1B[2J").unwrap();
     let mut current_line : [char; XSIZE as usize];
     let apple_y: u8 = get_y(apple);
-    println!("{}", &['-'; (XSIZE+2) as usize].iter().cloned().collect::<String>());
+    out.write(&['\n' as u8]).unwrap();
+    out.write( &['-' as u8; (XSIZE+2) as usize]).unwrap();
+    out.write(&['\n' as u8]).unwrap();
     for y in 0..YSIZE {
         current_line = [' '; XSIZE as usize];
         if apple_y == y {
@@ -36,9 +41,10 @@ fn print_state(apple : u16, snake : Vec<u16>) {
                 current_line[x as usize] = '#';
             }
         }
-        println!("|{}|",  current_line.iter().cloned().collect::<String>());
+        out.write(format!("|{}|\n",  current_line.iter().cloned().collect::<String>()).as_bytes()).unwrap();
     }
-    println!("{}", ['-'; (XSIZE+2) as usize].iter().cloned().collect::<String>());
+    out.write(&['-' as u8; (XSIZE+2) as usize]).unwrap();
+    out.flush().unwrap();
 }
 
 fn move_apple(snake : Vec<u16>, apple : &mut u16){
