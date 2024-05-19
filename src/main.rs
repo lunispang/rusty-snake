@@ -3,6 +3,8 @@
 //pos 0 in bottom left
 //x-> y ^
 
+use inputbot::KeybdKey::*;
+
 fn get_pos(x: u8, y: u8) -> u16 {
     return (x as u16) + ((y as u16) << 8);
 }
@@ -41,7 +43,21 @@ fn main() {
     // 1 -> right
     // 2 -> down
     // 3 -> left
-    let mut head_dir: u8 = 1;
+    static mut HEAD_DIR: u8 = 1;
+    unsafe {
+        WKey.bind(|| {
+            HEAD_DIR = 0;
+        });
+        AKey.bind(|| {
+            HEAD_DIR = 3;
+        });
+        SKey.bind(|| {
+            HEAD_DIR = 2;
+        });
+        DKey.bind(|| {
+            HEAD_DIR = 1;
+        });
+    }
     for x in 3..6 {
         snake.push(get_pos(x, 10));
     }
