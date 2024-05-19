@@ -4,6 +4,7 @@
 //x-> y ^
 
 use inputbot::KeybdKey::{self, *};
+use rand::prelude::*;
 
 fn get_pos(x: u8, y: u8) -> u16 {
     return (x as u16) + ((y as u16) << 8);
@@ -35,22 +36,29 @@ fn print_state(apple : u16, snake : Vec<u16>) {
         println!("{}",  current_str);
     }
 }
+
+/*fn move_apple(snake : &Vec<u16>, apple : &mut u16){
+    let rng: rand::prelude::ThreadRng = rand::thread_rng();
+    
+}*/
+
 //return true if snake is still alive
 //return false if snake is dead
 fn move_snake(snake : &mut Vec<u16>, head_dir: u8, apple : &mut u16) -> bool {
     let headpos: u16 = *snake.last().unwrap();
-    let newheadpos: u16 = (get_pos(get_x(headpos), get_y(headpos)) as i16 + match head_dir{
-        0 => 0x100,
-        1 => 1,
-        2 => -0x100,
-        3 => -1,
-        4.. =>0,
-    }).try_into().unwrap();
-    if snake.contains(&newheadpos) {
+    let newheadpos: u16 = match head_dir{
+        0 => headpos-0x100,
+        1 => headpos+1,
+        2 => headpos+0x100,
+        3 => headpos-1,
+        4.. =>headpos,
+    };
+    if snake.contains(&newheadpos){
         return false;
     }
     snake.push(newheadpos);
     if newheadpos != *apple {
+        //move_apple(snake, apple);
         snake.remove(0);
     }
     return true;
@@ -80,7 +88,9 @@ fn main() {
                 head_dir = key as u8;
             }
         }
-        move_snake(&mut snake, head_dir, &mut apple);
+        if !move_snake(&mut snake, head_dir, &mut apple) {
+            running = false;
+        }
         print_state(apple, snake.clone());
         std::thread::sleep(std::time::Duration::from_millis(tick));
     }
