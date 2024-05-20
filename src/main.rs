@@ -1,4 +1,4 @@
-//width: 40, height: 20, size: 800;
+//width: 20, height: 10, size: 200;
 //positions as u16, 0x00ff as x, 0xff00 as y
 //pos 0 in bottom left
 //x-> y V
